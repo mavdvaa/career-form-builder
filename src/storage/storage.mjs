@@ -5,12 +5,12 @@ import { fileURLToPath } from "node:url";
 import { validateAnswers } from "../functions/forms.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const dataFile = process.env.DATA_FILE || path.join(projectRoot, "data", "store.json");
+const storageFile = process.env.DATA_FILE || path.join(projectRoot, "data", "store.json");
 let updateQueue = Promise.resolve();
 
 async function readData() {
   try {
-    return JSON.parse(await readFile(dataFile, "utf8"));
+    return JSON.parse(await readFile(storageFile, "utf8"));
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
     return { forms: [], responses: [] };
@@ -21,10 +21,10 @@ function changeData(callback) {
   const update = updateQueue.then(async () => {
     const data = await readData();
     const result = await callback(data);
-    await mkdir(path.dirname(dataFile), { recursive: true });
-    const tempFile = `${dataFile}.${randomUUID()}.tmp`;
+    await mkdir(path.dirname(storageFile), { recursive: true });
+    const tempFile = `${storageFile}.${randomUUID()}.tmp`;
     await writeFile(tempFile, JSON.stringify(data, null, 2), "utf8");
-    await rename(tempFile, dataFile);
+    await rename(tempFile, storageFile);
     return result;
   });
   updateQueue = update.catch(() => {});

@@ -6,7 +6,7 @@ import {
   listForms,
   publishForm,
   updateForm,
-} from "./db/db.mjs";
+} from "./storage/storage.mjs";
 import { prepareForm } from "./functions/forms.mjs";
 import { adminPage, publicPage } from "./functions/pages.mjs";
 
